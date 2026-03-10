@@ -12,12 +12,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.State
+import com.example.noteapp.feature_note.domain.repository.DataStoreRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
-    private val noteUseCases: NoteUseCases
+    private val noteUseCases: NoteUseCases,
+    private val dataStoreRepository: DataStoreRepository
 ): ViewModel(){
 
     private val _state = mutableStateOf(NotesState())
@@ -30,6 +33,7 @@ class NotesViewModel @Inject constructor(
     init {
         getNotes(NoteOrder.Date(OrderType.Descending))
     }
+    val isLoggedIn = dataStoreRepository.getLoginState()
 
     fun onEvent(event: NotesEvent) {
         when (event) {
@@ -71,5 +75,12 @@ class NotesViewModel @Inject constructor(
                 )
             }
             .launchIn(viewModelScope)
+    }
+
+        fun logout() {
+        viewModelScope.launch {
+            dataStoreRepository.saveLoginState(false)
+            FirebaseAuth.getInstance().signOut()
+        }
     }
 }

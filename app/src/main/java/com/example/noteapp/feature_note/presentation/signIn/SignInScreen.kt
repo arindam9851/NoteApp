@@ -48,7 +48,6 @@ fun SignInScreen(
     navController: NavController,
     viewModel: SignInViewModel = hiltViewModel()
 ) {
-
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -176,17 +175,15 @@ fun SignInScreen(
                 )
             }
         }
-
         // Navigate when login success
         LaunchedEffect(state.isSuccess) {
             if (state.isSuccess) {
                 snackbarHostState.showSnackbar("Login successful")
                 navController.navigate(Screen.NotesScreen.route) {
-                    popUpTo("signin") { inclusive = true }
+                    popUpTo("sign_in_screen") { inclusive = true }
                 }
             }
         }
-
         // Show error
         LaunchedEffect(state.error) {
             state.error?.let { message ->
@@ -195,8 +192,5 @@ fun SignInScreen(
                 }
             }
         }
-
     }
-
-
 }

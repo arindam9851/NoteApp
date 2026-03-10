@@ -2,6 +2,7 @@ package com.example.noteapp.feature_note.presentation.signIn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.noteapp.feature_note.domain.repository.DataStoreRepository
 import com.example.noteapp.feature_note.domain.use_case.SignInUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val signInUseCase: SignInUseCase
+    private val signInUseCase: SignInUseCase,
+    private val dataStoreRepository: DataStoreRepository
 ): ViewModel(){
 
     private val _state = MutableStateFlow(SignInState())
@@ -26,6 +28,7 @@ class SignInViewModel @Inject constructor(
                     )
                     val result = signInUseCase.googleSignInUseCase(event.idToken)
                     result.onSuccess {
+                        dataStoreRepository.saveLoginState(true)
                         _state.value = state.value.copy(
                             isLoading = false,
                             isSuccess = true
