@@ -1,8 +1,13 @@
+import java.util.Properties
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -11,6 +16,10 @@ android {
         version = release(36) {
             minorApiLevel = 1
         }
+    }
+    buildFeatures {
+        buildConfig = true
+        compose = true
     }
 
     defaultConfig {
@@ -21,6 +30,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Use property
+        buildConfigField(
+            type = "String",
+            name = "GOOGLE_CLIENT_ID",
+            value = "\"${localProperties["GOOGLE_CLIENT_ID"]}\""
+        )
     }
 
     buildTypes {
@@ -35,9 +50,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-    buildFeatures {
-        compose = true
     }
 }
 
@@ -68,6 +80,17 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.coroutines.core)
     implementation(libs.room.ktx)
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    // Credentials
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    implementation(libs.play.services.auth)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
 
 }
