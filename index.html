@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Shared Note</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    margin:40px;
+}
+
+#title{
+    width:100%;
+    font-size:26px;
+    border:none;
+    outline:none;
+    margin-bottom:20px;
+}
+
+#content{
+    width:100%;
+    height:300px;
+    font-size:16px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<input id="title" placeholder="Note Title"/>
+
+<textarea id="content" placeholder="Write your note here..."></textarea>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBT2b315IL7a0qiRo-RdIDyw4VVQcvWoPE",
+  authDomain: "noteapp-1187e.firebaseapp.com",
+  projectId: "noteapp-1187e",
+  storageBucket: "noteapp-1187e.firebasestorage.app",
+  messagingSenderId: "759501422142",
+  appId: "1:759501422142:web:0d543e177cea1ac2359b6f",
+  measurementId: "G-7JL49H4RZ9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const pathSegments = window.location.pathname.split("/");
+const noteId = pathSegments[pathSegments.length - 1];
+
+if(!noteId){
+    document.body.innerHTML = "<h2>No Note ID found in URL</h2>";
+    throw new Error("No noteId");
+}
+
+const title = document.getElementById("title");
+const content = document.getElementById("content");
+
+const noteRef = doc(db, "notes", noteId);
+
+onSnapshot(noteRef, (docSnap) => {
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        title.value = data.title || "";
+        content.value = data.content || "";
+    } else {
+        console.log("No such note!");
+    }
+});
+
+// Update Firestore when title changes
+title.addEventListener("input", async () => {
+    try {
+        await updateDoc(noteRef, { title: title.value });
+    } catch (err) {
+        console.error("Error updating title:", err);
+    }
+});
+
+// Update Firestore when content changes
+content.addEventListener("input", async () => {
+    try {
+        await updateDoc(noteRef, { content: content.value });
+    } catch (err) {
+        console.error("Error updating content:", err);
+    }
+});
+
+</script>
+
+</body>
+</html>
+

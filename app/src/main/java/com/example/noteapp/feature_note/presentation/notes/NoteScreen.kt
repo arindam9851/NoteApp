@@ -1,6 +1,7 @@
 package com.example.noteapp.feature_note.presentation.notes
 
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -37,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,12 +60,25 @@ fun NotesScreen(
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle(initialValue = true)
-
+    val context = LocalContext.current
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
             navController.navigate(Screen.SignInScreen.route) {
                 popUpTo(Screen.NotesScreen.route) { inclusive = true }
             }
+        }
+    }
+    state.noteShareUrl?.let { url ->
+
+        LaunchedEffect(url) {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, url)
+            }
+            context.startActivity(
+                Intent.createChooser(intent, "Share Note")
+            )
+            viewModel.clearShareUrl()
         }
     }
     NotesDrawer(
@@ -173,6 +188,10 @@ fun NotesScreen(
                                         viewModel.onEvent(NotesEvent.RestoreNote)
                                     }
                                 }
+                            },
+                            onShareClick = { note ->
+                                viewModel.onEvent(NotesEvent.ShareNote(note))
+
                             }
                         )
                         Spacer(modifier = Modifier.height(16.dp))

@@ -9,8 +9,8 @@ import com.example.noteapp.feature_note.domain.use_case.AddNoteUseCase
 import com.example.noteapp.feature_note.domain.use_case.DeleteNoteUse
 import com.example.noteapp.feature_note.domain.use_case.GetListOfNoteUseCase
 import com.example.noteapp.feature_note.domain.use_case.GetNoteUseCase
-import com.example.noteapp.feature_note.domain.use_case.GoogleSignInUseCase
 import com.example.noteapp.feature_note.domain.use_case.NoteUseCases
+import com.example.noteapp.feature_note.domain.use_case.ShareNoteUserCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,6 +45,7 @@ object AppModule {
             deleteNote = DeleteNoteUse(repository),
             addNote = AddNoteUseCase(repository),
             getNote = GetNoteUseCase(repository),
+            shareNote = ShareNoteUserCase()
         )
     }
 }

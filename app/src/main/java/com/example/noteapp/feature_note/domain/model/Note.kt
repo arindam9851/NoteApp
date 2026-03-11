@@ -14,7 +14,9 @@ data class Note(
     val content : String,
     val color : Int,
     val timeStamp : Long,
-    @PrimaryKey val id : Int?=null
+    @PrimaryKey val id : Int?=null,
+    val isShared: Boolean = false,
+    val shareUrl: String? = null
 ){
     companion object{
         val noteColors = listOf(RedOrange, LightGreen,RedPink, BabyBlue, Violet)

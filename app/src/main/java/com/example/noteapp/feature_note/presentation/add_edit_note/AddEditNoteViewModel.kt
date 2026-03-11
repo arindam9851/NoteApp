@@ -1,6 +1,5 @@
 package com.example.noteapp.feature_note.presentation.add_edit_note
 
-import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.toArgb
@@ -10,10 +9,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.noteapp.feature_note.domain.model.InvalidNoteException
 import com.example.noteapp.feature_note.domain.model.Note
 import com.example.noteapp.feature_note.domain.use_case.NoteUseCases
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class AddEditNoteViewModel @Inject constructor(
     private val noteUseCases: NoteUseCases,
@@ -89,17 +90,37 @@ class AddEditNoteViewModel @Inject constructor(
             is AddEditNoteEvent.SaveNote -> {
                 viewModelScope.launch {
                     try {
-                        noteUseCases.addNote(
-                            Note(
-                                title = noteTitle.value.text,
-                                content = noteContent.value.text,
-                                timeStamp = System.currentTimeMillis(),
-                                color = noteColor.value,
-                                id = currentNoteId
-                            )
+                        // Build base note
+                        val note = Note(
+                            title = noteTitle.value.text,
+                            content = noteContent.value.text,
+                            timeStamp = System.currentTimeMillis(),
+                            color = noteColor.value,
+                            id = currentNoteId
                         )
+
+                        if (currentNoteId == null) {
+                            // New note
+                            noteUseCases.addNote(note)
+                        } else {
+                            // Update note in Room
+                            val updatedNote = note.copy(isShared = true)
+                            noteUseCases.addNote(updatedNote)
+
+                            // Share note asynchronously
+                            noteUseCases.shareNote(updatedNote).collect { url ->
+                                url?.let {
+                                    // Update note with shareUrl if needed
+                                    val sharedNote = updatedNote.copy(shareUrl = it)
+                                    noteUseCases.addNote(sharedNote)
+                                }
+                            }
+                        }
+
+                        // Notify UI that note is saved
                         _eventFlow.emit(UiEvent.SaveNote)
-                    } catch(e: InvalidNoteException) {
+
+                    } catch (e: InvalidNoteException) {
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
                                 message = e.message ?: "Couldn't save note"

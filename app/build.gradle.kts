@@ -83,6 +83,8 @@ dependencies {
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+
     // Credentials
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
@@ -92,5 +94,4 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     //DataStore
     implementation(libs.androidx.datastore.preferences)
-
 }
