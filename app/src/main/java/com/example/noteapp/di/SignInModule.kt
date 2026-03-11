@@ -3,6 +3,7 @@ package com.example.noteapp.di
 import com.example.noteapp.feature_note.data.repository.AuthRepositoryImpl
 import com.example.noteapp.feature_note.domain.repository.AuthRepository
 import com.example.noteapp.feature_note.domain.use_case.GoogleSignInUseCase
+import com.example.noteapp.feature_note.domain.use_case.PhoneSignInUseCase
 import com.example.noteapp.feature_note.domain.use_case.SignInUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
@@ -31,7 +32,8 @@ object SignInModule {
     @Singleton
     fun provideSignInUseCase(authRepository: AuthRepository): SignInUseCase {
         return SignInUseCase(
-            googleSignInUseCase = GoogleSignInUseCase(authRepository)
+            googleSignInUseCase = GoogleSignInUseCase(authRepository),
+            phoneSignInUseCase = PhoneSignInUseCase(authRepository)
         )
     }
 }

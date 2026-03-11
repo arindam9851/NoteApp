@@ -1,4 +1,4 @@
-package com.example.noteapp.feature_note.presentation.signIn.components
+package com.example.noteapp.feature_note.presentation.signIn.google.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 

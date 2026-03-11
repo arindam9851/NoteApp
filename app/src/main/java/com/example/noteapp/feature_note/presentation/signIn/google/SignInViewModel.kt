@@ -1,9 +1,11 @@
-package com.example.noteapp.feature_note.presentation.signIn
+package com.example.noteapp.feature_note.presentation.signIn.google
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.noteapp.feature_note.domain.repository.DataStoreRepository
 import com.example.noteapp.feature_note.domain.use_case.SignInUseCase
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,9 +31,14 @@ class SignInViewModel @Inject constructor(
                     val result = signInUseCase.googleSignInUseCase(event.idToken)
                     result.onSuccess {
                         dataStoreRepository.saveLoginState(true)
+                        val phoneLinked =
+                            !FirebaseAuth.getInstance().currentUser?.phoneNumber.isNullOrEmpty()
+
                         _state.value = state.value.copy(
                             isLoading = false,
-                            isSuccess = true
+                            isSuccess = true,
+                            isPhoneLinked = phoneLinked,
+                            hasNavigated = false
                         )
                     }.onFailure {
                         _state.value = state.value.copy(
@@ -44,5 +51,8 @@ class SignInViewModel @Inject constructor(
             }
 
         }
+    }
+    fun onNavigated() {
+        _state.value = state.value.copy(hasNavigated = true)
     }
 }

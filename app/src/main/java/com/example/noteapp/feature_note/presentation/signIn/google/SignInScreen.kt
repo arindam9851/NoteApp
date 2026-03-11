@@ -1,4 +1,4 @@
-package com.example.noteapp.feature_note.presentation.signIn
+package com.example.noteapp.feature_note.presentation.signIn.google
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -35,7 +35,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.noteapp.R
-import com.example.noteapp.feature_note.presentation.signIn.components.SignInButton
+import com.example.noteapp.feature_note.presentation.signIn.google.components.SignInButton
 import com.example.noteapp.feature_note.presentation.utils.Screen
 import com.example.noteapp.feature_note.presentation.utils.snackbar.AppSnackbarHost
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -162,7 +162,7 @@ fun SignInScreen(
                 SignInButton(
                     text = "Continue with Phone",
                     onClick = {
-                        navController.navigate("phone_login")
+                        navController.navigate("phone_sign_in_screen")
                     }
                 )
 
@@ -175,13 +175,18 @@ fun SignInScreen(
                 )
             }
         }
-        // Navigate when login success
-        LaunchedEffect(state.isSuccess) {
-            if (state.isSuccess) {
-                snackbarHostState.showSnackbar("Login successful")
-                navController.navigate(Screen.NotesScreen.route) {
-                    popUpTo("sign_in_screen") { inclusive = true }
+        LaunchedEffect(state.isSuccess, state.hasNavigated) {
+            if (state.isSuccess && !state.hasNavigated) {
+                if (!state.isPhoneLinked) {
+                    navController.navigate(Screen.PhoneSignInScreen.route) {
+                        popUpTo(Screen.SignInScreen.route) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(Screen.NotesScreen.route) {
+                        popUpTo(Screen.SignInScreen.route) { inclusive = true }
+                    }
                 }
+                viewModel.onNavigated()
             }
         }
         // Show error

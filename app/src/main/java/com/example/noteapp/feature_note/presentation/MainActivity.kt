@@ -1,10 +1,14 @@
 package com.example.noteapp.feature_note.presentation
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,7 +18,8 @@ import androidx.navigation.navArgument
 import com.example.noteapp.feature_note.domain.repository.DataStoreRepository
 import com.example.noteapp.feature_note.presentation.add_edit_note.AddEditNoteScreen
 import com.example.noteapp.feature_note.presentation.notes.NotesScreen
-import com.example.noteapp.feature_note.presentation.signIn.SignInScreen
+import com.example.noteapp.feature_note.presentation.signIn.google.SignInScreen
+import com.example.noteapp.feature_note.presentation.signIn.phone.PhoneSignInScreen
 import com.example.noteapp.feature_note.presentation.utils.Screen
 import com.example.noteapp.ui.theme.NoteAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +30,7 @@ class MainActivity : ComponentActivity() {
 
     @Inject lateinit var dataStoreRepository: DataStoreRepository
 
+    @SuppressLint("ContextCastToActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -47,6 +53,19 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(route = Screen.SignInScreen.route) {
                         SignInScreen(navController = navController)
+                    }
+                    composable(route = Screen.PhoneSignInScreen.route) {
+                        // Pass navController or a callback for when verification is done
+                        PhoneSignInScreen(
+                            activity = LocalContext.current as Activity,
+                            viewModel = hiltViewModel(),
+                            onVerified = {
+                                // Navigate to NotesScreen after phone linked
+                                navController.navigate(Screen.NotesScreen.route) {
+                                    popUpTo(Screen.SignInScreen.route) { inclusive = true }
+                                }
+                            }
+                        )
                     }
                     composable(route = Screen.NotesScreen.route) {
                         NotesScreen(navController = navController)
