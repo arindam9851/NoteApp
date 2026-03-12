@@ -34,6 +34,11 @@ fun NotesDrawer(
                     selected = true,
                     onClick = { }
                 )
+                NavigationDrawerItem(
+                    label = { Text("Shared Notes") },
+                    selected = false,
+                    onClick = { }
+                )
 
                 NavigationDrawerItem(
                     label = { Text("Profile") },

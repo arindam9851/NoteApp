@@ -54,12 +54,10 @@ fun SignInScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val clientId = BuildConfig.GOOGLE_CLIENT_ID
-    Log.d("Arindam", "Signin Screen main")
 
     // Trigger check on first composition
     LaunchedEffect(Unit) {
         viewModel.onEvent(SignInEvent.CheckIfLoggedIn)
-        Log.d("Arindam", "Signin Screen from launch effect check login")
     }
 
     // Navigation
@@ -70,7 +68,6 @@ fun SignInScreen(
             }
             viewModel.onNavigated()
         }
-        Log.d("Arindam", "Signin Screen from launch effect")
     }
 
     Scaffold(

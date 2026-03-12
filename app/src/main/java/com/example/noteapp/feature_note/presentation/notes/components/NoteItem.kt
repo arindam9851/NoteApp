@@ -99,7 +99,7 @@ fun NoteItem(
                 text = note.content,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 10,
+                maxLines = 4,
                 overflow = TextOverflow.Ellipsis
             )
         }
