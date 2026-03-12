@@ -2,6 +2,7 @@ package com.example.noteapp.feature_note.presentation.notes
 
 
 import android.content.Intent
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -61,6 +62,8 @@ fun NotesScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle(initialValue = true)
     val context = LocalContext.current
+    Log.d("Arindam", "Note Screen main")
+
     LaunchedEffect(isLoggedIn) {
         if (!isLoggedIn) {
             navController.navigate(Screen.SignInScreen.route) {

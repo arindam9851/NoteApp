@@ -42,6 +42,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import kotlinx.coroutines.launch
 import com.example.noteapp.BuildConfig
+import com.example.noteapp.feature_note.presentation.signIn.phone.PhoneAuthMode
 
 @Composable
 fun SignInScreen(
@@ -53,6 +54,24 @@ fun SignInScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val clientId = BuildConfig.GOOGLE_CLIENT_ID
+    Log.d("Arindam", "Signin Screen main")
+
+    // Trigger check on first composition
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(SignInEvent.CheckIfLoggedIn)
+        Log.d("Arindam", "Signin Screen from launch effect check login")
+    }
+
+    // Navigation
+    LaunchedEffect(state.navigationTarget, state.hasNavigated) {
+        state.navigationTarget?.let { route ->
+            navController.navigate(route) {
+                popUpTo(Screen.SignInScreen.route) { inclusive = true }
+            }
+            viewModel.onNavigated()
+        }
+        Log.d("Arindam", "Signin Screen from launch effect")
+    }
 
     Scaffold(
         snackbarHost = { AppSnackbarHost(snackbarHostState)
@@ -162,7 +181,11 @@ fun SignInScreen(
                 SignInButton(
                     text = "Continue with Phone",
                     onClick = {
-                        navController.navigate("phone_sign_in_screen")
+                        navController.navigate(
+                            Screen.PhoneSignInScreen.createRoute(PhoneAuthMode.SIGN_IN_NEW_USER)
+                        ) {
+                            popUpTo(Screen.SignInScreen.route) { inclusive = true } // removes SignInScreen
+                        }
                     }
                 )
 
@@ -175,20 +198,20 @@ fun SignInScreen(
                 )
             }
         }
-        LaunchedEffect(state.isSuccess, state.hasNavigated) {
-            if (state.isSuccess && !state.hasNavigated) {
-                if (!state.isPhoneLinked) {
-                    navController.navigate(Screen.PhoneSignInScreen.route) {
-                        popUpTo(Screen.SignInScreen.route) { inclusive = true }
-                    }
-                } else {
-                    navController.navigate(Screen.NotesScreen.route) {
-                        popUpTo(Screen.SignInScreen.route) { inclusive = true }
-                    }
-                }
-                viewModel.onNavigated()
-            }
-        }
+//        LaunchedEffect(state.isSuccess, state.hasNavigated) {
+//            if (state.isSuccess && !state.hasNavigated) {
+//                if (!state.isPhoneLinked) {
+//                    navController.navigate(Screen.PhoneSignInScreen.route) {
+//                        popUpTo(Screen.SignInScreen.route) { inclusive = true }
+//                    }
+//                } else {
+//                    navController.navigate(Screen.NotesScreen.route) {
+//                        popUpTo(Screen.SignInScreen.route) { inclusive = true }
+//                    }
+//                }
+//                viewModel.onNavigated()
+//            }
+//        }
         // Show error
         LaunchedEffect(state.error) {
             state.error?.let { message ->

@@ -7,4 +7,5 @@ sealed class PhoneSignInEvent {
     data class EnterOtp(val otp: String) : PhoneSignInEvent()
     data class SendOtp(val activity: Activity) : PhoneSignInEvent()
     object VerifyOtp : PhoneSignInEvent()
+    object VerifyOtpForNewUser : PhoneSignInEvent()
 }

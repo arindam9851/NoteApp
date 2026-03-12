@@ -22,4 +22,8 @@ class PhoneSignInUseCase(
     suspend fun invokeVerifyOtp(verificationId: String, otp: String): Result<Unit> {
         return authRepository.verifyOtp(verificationId, otp)
     }
+
+    suspend fun invokeVerifyOtpForNewUser(verificationId: String, otp: String): Result<Unit> {
+        return authRepository.verifyOtpForNewUser(verificationId, otp)
+    }
 }

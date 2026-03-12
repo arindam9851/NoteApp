@@ -7,4 +7,7 @@ interface AuthRepository {
 
     suspend fun sendOtp(phone: String, activity: Activity): Result<String> // returns verificationId
     suspend fun verifyOtp(verificationId: String, otp: String): Result<Unit>
+
+    suspend fun verifyOtpForNewUser(verificationId: String, otp: String): Result<Unit>
+
 }

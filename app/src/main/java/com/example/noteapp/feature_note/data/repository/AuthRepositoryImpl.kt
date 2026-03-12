@@ -34,10 +34,10 @@ class AuthRepositoryImpl @Inject constructor(
                 // Auto verify - optional
             }
             override fun onVerificationFailed(e: FirebaseException) {
-                if (cont.isActive) cont.resume(Result.failure(e)) {}
+                if (cont.isActive) cont.resume(Result.failure(e)) { _, _, _ -> }
             }
             override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                if (cont.isActive) cont.resume(Result.success(verificationId)) {}
+                if (cont.isActive) cont.resume(Result.success(verificationId)) { _, _, _ -> }
             }
         }
 
@@ -57,6 +57,15 @@ class AuthRepositoryImpl @Inject constructor(
             ?: return Result.failure(Exception("No logged-in user to link"))
 
         user.linkWithCredential(credential).await()
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    override suspend fun verifyOtpForNewUser(verificationId: String, otp: String): Result<Unit> = try {
+        val credential = PhoneAuthProvider.getCredential(verificationId, otp)
+        // Sign in directly (treat as new user)
+        firebaseAuth.signInWithCredential(credential).await()
         Result.success(Unit)
     } catch (e: Exception) {
         Result.failure(e)

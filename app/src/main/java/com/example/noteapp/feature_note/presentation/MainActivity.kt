@@ -19,6 +19,7 @@ import com.example.noteapp.feature_note.domain.repository.DataStoreRepository
 import com.example.noteapp.feature_note.presentation.add_edit_note.AddEditNoteScreen
 import com.example.noteapp.feature_note.presentation.notes.NotesScreen
 import com.example.noteapp.feature_note.presentation.signIn.google.SignInScreen
+import com.example.noteapp.feature_note.presentation.signIn.phone.PhoneAuthMode
 import com.example.noteapp.feature_note.presentation.signIn.phone.PhoneSignInScreen
 import com.example.noteapp.feature_note.presentation.utils.Screen
 import com.example.noteapp.ui.theme.NoteAppTheme
@@ -54,17 +55,19 @@ class MainActivity : ComponentActivity() {
                     composable(route = Screen.SignInScreen.route) {
                         SignInScreen(navController = navController)
                     }
-                    composable(route = Screen.PhoneSignInScreen.route) {
+                    composable(
+                        route = "phone_sign_in_screen/{mode}",// include mode placeholder
+                        arguments = listOf(navArgument("mode") { type = NavType.StringType })
+                    ) {backStackEntry->
+                        val modeArg = backStackEntry.arguments?.getString("mode")
+                            ?: PhoneAuthMode.SIGN_IN_NEW_USER.name
+                        val mode = PhoneAuthMode.valueOf(modeArg)
                         // Pass navController or a callback for when verification is done
                         PhoneSignInScreen(
                             activity = LocalContext.current as Activity,
                             viewModel = hiltViewModel(),
-                            onVerified = {
-                                // Navigate to NotesScreen after phone linked
-                                navController.navigate(Screen.NotesScreen.route) {
-                                    popUpTo(Screen.SignInScreen.route) { inclusive = true }
-                                }
-                            }
+                            mode = mode,
+                            navController = navController,
                         )
                     }
                     composable(route = Screen.NotesScreen.route) {

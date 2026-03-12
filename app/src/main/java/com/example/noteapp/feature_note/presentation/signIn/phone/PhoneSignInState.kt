@@ -6,5 +6,7 @@ data class PhoneSignInState(
     val verificationId: String? = null,
     val isLoading: Boolean = false,
     val isVerified: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val navigationTarget: String? = null,
+    val hasNavigated: Boolean = false
 )

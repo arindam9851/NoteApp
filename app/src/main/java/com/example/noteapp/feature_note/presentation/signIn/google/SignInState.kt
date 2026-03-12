@@ -5,5 +5,6 @@ data class SignInState(
     val isSuccess: Boolean = false,
     val error: String? = null,
     val isPhoneLinked: Boolean = false,
-    val hasNavigated: Boolean = false
+    val hasNavigated: Boolean = false,
+    val navigationTarget: String? = null
 )

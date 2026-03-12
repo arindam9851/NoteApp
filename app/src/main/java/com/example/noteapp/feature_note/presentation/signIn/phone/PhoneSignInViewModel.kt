@@ -2,7 +2,9 @@ package com.example.noteapp.feature_note.presentation.signIn.phone
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.noteapp.feature_note.domain.repository.DataStoreRepository
 import com.example.noteapp.feature_note.domain.use_case.SignInUseCase
+import com.example.noteapp.feature_note.presentation.utils.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PhoneSignInViewModel @Inject constructor(
-    private val signInUseCase: SignInUseCase
+    private val signInUseCase: SignInUseCase,
+    private val dataStoreRepository: DataStoreRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(PhoneSignInState())
@@ -60,9 +63,37 @@ class PhoneSignInViewModel @Inject constructor(
                 viewModelScope.launch {
                     val result = signInUseCase.phoneSignInUseCase.invokeVerifyOtp(verificationId, otp)
                     result.onSuccess {
+                        dataStoreRepository.saveLoginState(true)
                         _state.value = state.value.copy(
                             isLoading = false,
-                            isVerified = true
+                            isVerified = true,
+                            navigationTarget = Screen.NotesScreen.route,
+                            hasNavigated = false
+                        )
+                    }.onFailure {
+                        _state.value = state.value.copy(
+                            isLoading = false,
+                            error = it.message
+                        )
+                    }
+                }
+            }
+            PhoneSignInEvent.VerifyOtpForNewUser -> {
+                val verificationId = state.value.verificationId
+                val otp = state.value.otp
+                if (verificationId.isNullOrBlank() || otp.isBlank()) return
+
+                _state.value = state.value.copy(isLoading = true, error = null)
+
+                viewModelScope.launch {
+                    val result = signInUseCase.phoneSignInUseCase.invokeVerifyOtpForNewUser(verificationId, otp)
+                    result.onSuccess {
+                        dataStoreRepository.saveLoginState(true)
+                        _state.value = state.value.copy(
+                            isLoading = false,
+                            isVerified = true,
+                            navigationTarget = Screen.NotesScreen.route,
+                            hasNavigated = false
                         )
                     }.onFailure {
                         _state.value = state.value.copy(
@@ -73,6 +104,9 @@ class PhoneSignInViewModel @Inject constructor(
                 }
             }
         }
+    }
+    fun onNavigated() {
+        _state.value = state.value.copy(hasNavigated = true)
     }
 
 }
