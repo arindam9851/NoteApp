@@ -7,7 +7,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import java.util.UUID
 
 class ShareNoteUserCase {
 
@@ -15,7 +14,7 @@ class ShareNoteUserCase {
 
         try {
             val firestore = FirebaseFirestore.getInstance()
-            val noteId = note.id ?: UUID.randomUUID().toString()
+            val noteId = note.id
 
             val noteData = hashMapOf(
                 "title" to note.title,
@@ -24,7 +23,7 @@ class ShareNoteUserCase {
             )
 
             firestore.collection("notes")
-                .document(noteId.toString())
+                .document(noteId)
                 .set(noteData)
                 .addOnSuccessListener {
 

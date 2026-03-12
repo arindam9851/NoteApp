@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,11 +38,11 @@ class AddEditNoteViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var currentNoteId: Int? = null
+    private var currentNoteId: String? = null
 
     init {
-        savedStateHandle.get<Int>("noteId")?.let { noteId ->
-            if(noteId != -1) {
+        savedStateHandle.get<String>("noteId")?.let { noteId ->
+
                 viewModelScope.launch {
                     noteUseCases.getNote(noteId)?.also { note ->
                         currentNoteId = note.id
@@ -56,7 +57,7 @@ class AddEditNoteViewModel @Inject constructor(
                         _noteColor.value = note.color
                     }
                 }
-            }
+
         }
     }
 
@@ -96,7 +97,7 @@ class AddEditNoteViewModel @Inject constructor(
                             content = noteContent.value.text,
                             timeStamp = System.currentTimeMillis(),
                             color = noteColor.value,
-                            id = currentNoteId
+                            id = currentNoteId ?: UUID.randomUUID().toString()
                         )
 
                         if (currentNoteId == null) {

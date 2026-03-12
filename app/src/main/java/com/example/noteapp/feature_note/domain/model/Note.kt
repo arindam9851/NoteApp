@@ -7,6 +7,7 @@ import com.example.noteapp.ui.theme.LightGreen
 import com.example.noteapp.ui.theme.RedOrange
 import com.example.noteapp.ui.theme.RedPink
 import com.example.noteapp.ui.theme.Violet
+import java.util.UUID
 
 @Entity
 data class Note(
@@ -14,7 +15,7 @@ data class Note(
     val content : String,
     val color : Int,
     val timeStamp : Long,
-    @PrimaryKey val id : Int?=null,
+    @PrimaryKey val id : String= UUID.randomUUID().toString(),
     val isShared: Boolean = false,
     val shareUrl: String? = null
 ){

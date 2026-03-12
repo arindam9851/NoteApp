@@ -80,8 +80,8 @@ class MainActivity : ComponentActivity() {
                             navArgument(
                                 name = "noteId"
                             ) {
-                                type = NavType.IntType
-                                defaultValue = -1
+                                type = NavType.StringType
+                                nullable = true
                             },
                             navArgument(
                                 name = "noteColor"
