@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.noteapp.feature_note.domain.model.InvalidNoteException
 import com.example.noteapp.feature_note.domain.model.Note
 import com.example.noteapp.feature_note.domain.use_case.NoteUseCases
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -39,6 +40,7 @@ class AddEditNoteViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var currentNoteId: String? = null
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     init {
         savedStateHandle.get<String>("noteId")?.let { noteId ->
@@ -97,7 +99,9 @@ class AddEditNoteViewModel @Inject constructor(
                             content = noteContent.value.text,
                             timeStamp = System.currentTimeMillis(),
                             color = noteColor.value,
-                            id = currentNoteId ?: UUID.randomUUID().toString()
+                            id = currentNoteId ?: UUID.randomUUID().toString(),
+                            userId = userId,
+                            isSynced = false,
                         )
 
                         if (currentNoteId == null) {

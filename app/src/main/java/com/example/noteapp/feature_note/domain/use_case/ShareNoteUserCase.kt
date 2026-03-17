@@ -22,7 +22,7 @@ class ShareNoteUserCase {
                 "lastUpdated" to FieldValue.serverTimestamp()
             )
 
-            firestore.collection("notes")
+            firestore.collection("sharedNotes")
                 .document(noteId)
                 .set(noteData)
                 .addOnSuccessListener {
