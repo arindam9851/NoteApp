@@ -2,6 +2,7 @@ package com.example.noteapp.di
 
 import android.app.Application
 import androidx.room.Room
+import com.example.noteapp.feature_note.data.data_source.Migrations
 import com.example.noteapp.feature_note.data.data_source.NoteDatabase
 import com.example.noteapp.feature_note.data.repository.NoteRepositoryImpl
 import com.example.noteapp.feature_note.domain.repository.NoteRepository
@@ -28,7 +29,9 @@ object AppModule {
             app,
             NoteDatabase::class.java,
             NoteDatabase.DATABASE_NAME
-        ).build()
+        )
+            .addMigrations(Migrations.MIGRATION_1_2)
+            .build()
     }
 
     @Provides

@@ -17,7 +17,11 @@ data class Note(
     val timeStamp : Long,
     @PrimaryKey val id : String= UUID.randomUUID().toString(),
     val isShared: Boolean = false,
-    val shareUrl: String? = null
+    val shareUrl: String? = null,
+
+    val userId: String,
+    val isSynced: Boolean = false,
+    val updatedAt: Long = System.currentTimeMillis()
 ){
     companion object{
         val noteColors = listOf(RedOrange, LightGreen,RedPink, BabyBlue, Violet)

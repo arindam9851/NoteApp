@@ -21,4 +21,10 @@ interface NoteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: Note)
+
+    @Query("SELECT * FROM note WHERE isSynced = 0")
+    suspend fun getUnsyncedNotes(): List<Note>
+
+    @Query("UPDATE note SET isSynced = 1 WHERE id = :noteId")
+    suspend fun markSynced(noteId: String)
 }
