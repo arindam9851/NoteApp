@@ -27,12 +27,14 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
+import com.example.noteapp.R
 import com.example.noteapp.feature_note.domain.model.Note
 
 @Composable
@@ -133,6 +135,14 @@ fun NoteItem(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
+            if(note.isSynced)
+                IconButton(onClick = {  },modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_cloud_sync),
+                        contentDescription = "Synced note",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             Spacer(modifier = Modifier.width(4.dp))
         }
     }

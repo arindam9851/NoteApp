@@ -2,10 +2,12 @@ package com.example.noteapp.feature_note.presentation
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -22,7 +24,9 @@ import com.example.noteapp.feature_note.presentation.signIn.google.SignInScreen
 import com.example.noteapp.feature_note.presentation.signIn.phone.PhoneAuthMode
 import com.example.noteapp.feature_note.presentation.signIn.phone.PhoneSignInScreen
 import com.example.noteapp.feature_note.presentation.utils.Screen
+import com.example.noteapp.feature_note.worker.SyncManager
 import com.example.noteapp.ui.theme.NoteAppTheme
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -30,10 +34,18 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var dataStoreRepository: DataStoreRepository
+    @Inject
+    lateinit var syncManager: SyncManager
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ContextCastToActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null) {
+            syncManager.scheduleDailySync()
+        }
         enableEdgeToEdge()
         setContent {
             NoteAppTheme {
