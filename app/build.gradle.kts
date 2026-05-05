@@ -7,16 +7,13 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.roborazzi)
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.noteapp"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
     buildFeatures {
         buildConfig = true
         compose = true
@@ -50,6 +47,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -109,4 +111,12 @@ dependencies {
     //Hilt test
     androidTestImplementation(libs.hilt.android.testing)
     ksp(libs.hilt.android.compiler)
+
+    //Roborazzi
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.rule)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.ui.test.junit4)
+
 }

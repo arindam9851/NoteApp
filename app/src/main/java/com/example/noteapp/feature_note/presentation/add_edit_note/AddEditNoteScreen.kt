@@ -78,88 +78,23 @@ fun AddEditNoteScreen(
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackBarHostState) },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.onEvent(AddEditNoteEvent.SaveNote)
-                },
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(Icons.Default.Save, contentDescription = "Save note")
+    AddEditNoteContent(
+        backgroundColor = noteBackgroundAnimatable.value,
+        titleText = titleState.text,
+        contentText = contentState.text,
+        selectedColor = viewModel.noteColor.value,
+        onColorClick = { colorInt ->
+            scope.launch {
+                noteBackgroundAnimatable.animateTo(
+                    targetValue = Color(colorInt),
+                    animationSpec = tween(durationMillis = 500)
+                )
             }
-        }
-    ) {paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(noteBackgroundAnimatable.value)
-                .padding(paddingValues)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Note.noteColors.forEach { color ->
-                    val colorInt = color.toArgb()
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .shadow(15.dp, CircleShape)
-                            .clip(CircleShape)
-                            .background(color)
-                            .border(
-                                width = 3.dp,
-                                color = if (viewModel.noteColor.value == colorInt) {
-                                    Color.Black
-                                } else Color.Transparent,
-                                shape = CircleShape
-                            )
-                            .clickable {
-                                scope.launch {
-                                    noteBackgroundAnimatable.animateTo(
-                                        targetValue = Color(colorInt),
-                                        animationSpec = tween(
-                                            durationMillis = 500
-                                        )
-                                    )
-                                }
-                                viewModel.onEvent(AddEditNoteEvent.ChangeColor(colorInt))
-                            }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            TransparentHintTextField(
-                text = titleState.text,
-                hint = titleState.hint,
-                onValueChange = {
-                    viewModel.onEvent(AddEditNoteEvent.EnteredTitle(it))
-                },
-                onFocusChange = {
-                    viewModel.onEvent(AddEditNoteEvent.ChangeTitleFocus(it))
-                },
-                isHintVisible = titleState.isHintVisible,
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            TransparentHintTextField(
-                text = contentState.text,
-                hint = contentState.hint,
-                onValueChange = {
-                    viewModel.onEvent(AddEditNoteEvent.EnteredContent(it))
-                },
-                onFocusChange = {
-                    viewModel.onEvent(AddEditNoteEvent.ChangeContentFocus(it))
-                },
-                isHintVisible = contentState.isHintVisible,
-                textStyle = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.fillMaxHeight()
-            )
-        }
-    }
+            viewModel.onEvent(AddEditNoteEvent.ChangeColor(colorInt))
+        },
+        onTitleChange = { viewModel.onEvent(AddEditNoteEvent.EnteredTitle(it)) },
+        onContentChange = { viewModel.onEvent(AddEditNoteEvent.EnteredContent(it)) },
+        onSaveClick = { viewModel.onEvent(AddEditNoteEvent.SaveNote) }
+    )
+
 }
