@@ -1,7 +1,8 @@
-package com.example.noteapp
+package com.example.noteapp.viewmodel_test
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.example.noteapp.MainDispatcherRule
 import com.example.noteapp.feature_note.domain.model.InvalidNoteException
 import com.example.noteapp.feature_note.domain.model.Note
 import com.example.noteapp.feature_note.domain.repository.AuthProvider
